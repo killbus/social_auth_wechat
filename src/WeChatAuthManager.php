@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\social_auth_example;
+namespace Drupal\social_auth_wechat;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 

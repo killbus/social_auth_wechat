@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\social_auth_example\Plugin\Network;
+namespace Drupal\social_auth_wechat\Plugin\Network;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -34,16 +34,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *     field.
  *   - config_id: The configuration id. It usually is the same used by the
  *     configuration form.
- *     @see Drupal\social_auth_example\Form\GoogleAuthSettingsForm.
+ *     @see Drupal\social_auth_wechat\Form\WeChatAuthSettingsForm.
  *
  * @Network(
- *   id = "social_auth_example",
- *   social_network = "Google",
+ *   id = "social_auth_wechat",
+ *   social_network = "WeChat",
  *   type = "social_auth",
  *   handlers = {
  *      "settings": {
- *          "class": "\Drupal\social_auth_example\Settings\GoogleAuthSettings",
- *          "config_id": "social_auth_example.settings"
+ *          "class": "\Drupal\social_auth_wechat\Settings\WeChatAuthSettings",
+ *          "config_id": "social_auth_wechat.settings"
  *      }
  *   }
  * )
@@ -95,20 +95,20 @@ class WeChatAuth extends SocialAuthNetwork {
   /**
    * {@inheritdoc}
    *
-   * Initializes the Google SDK to request Google Accounts.
+   * Initializes the WeChat SDK to request WeChat Accounts.
    *
    * The returning value of this method is what is returned when an instance of
    * this Network Plugin called the getSdk method.
-   * @see Drupal\social_auth_example\Controller\GoogleAuthController::callback
+   * @see Drupal\social_auth_wechat\Controller\GoogleAuthController::callback
    */
   public function initSdk() {
     // Checks if the dependency, the \Google_Client library, is available.
     $class_name = '\Google_Client';
     if (!class_exists($class_name)) {
-      throw new SocialApiException(sprintf('The PHP SDK for Google Services could not be found. Class: %s.', $class_name));
+      throw new SocialApiException(sprintf('The PHP SDK for WeChat Services could not be found. Class: %s.', $class_name));
     }
 
-    /* @var \Drupal\social_auth_example\Settings\WeChatAuthSettings $settings */
+    /* @var \Drupal\social_auth_wechat\Settings\WeChatAuthSettings $settings */
     /*
      * The settings property is an instance of the class defined in the
      * Network Plugin definition.
@@ -116,7 +116,7 @@ class WeChatAuth extends SocialAuthNetwork {
     $settings = $this->settings;
 
     // Gets the absolute url of the callback.
-    $redirect_uri = $this->urlGenerator->generateFromRoute('social_auth_example.callback', array(), array('absolute' => TRUE));
+    $redirect_uri = $this->urlGenerator->generateFromRoute('social_auth_wechat.callback', array(), array('absolute' => TRUE));
 
     // Creates a and sets data to Google_Client object.
     $client = new \Google_Client();

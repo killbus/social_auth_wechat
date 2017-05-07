@@ -1,9 +1,9 @@
 <?php
 
-namespace Drupal\social_auth_example\Settings;
+namespace Drupal\social_auth_wechat\Settings;
 
 /**
- * Defines an interface for Social Auth Google settings.
+ * Defines an interface for Social Auth WeChat settings.
  */
 interface WeChatAuthSettingsInterface {
 

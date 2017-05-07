@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Install and uninstall functions for the Google Login module.
+ * Install and uninstall functions for the WeChat Login module.
  */
 
 use Drupal\social_auth\Controller\SocialAuthController;
@@ -19,10 +19,10 @@ function social_auth_wechat_requirements($phase) {
   // When the site builder wants to enable this module.
   if ($phase == 'install') {
     // We check that the required library was downloaded beforehand.
-    if (!class_exists('\Google_Client')) {
+    if (!class_exists('\EasyWeChat\Foundation\Application')) {
       // If it wasn't, we add a requirement error.
       $requirements['social_auth_wechat'] = [
-        'description' => t('Social Auth WeChat requires overture/wechat SDK. Make sure the library is installed via Composer. Check README.txt for installation instructions.'),
+        'description' => t('Social Auth WeChat requires EasyWeChat SDK. Make sure the library is installed via Composer. Check README.txt for installation instructions.'),
         'severity' => REQUIREMENT_ERROR,
       ];
     }
