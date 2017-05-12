@@ -13,7 +13,7 @@ use Drupal\social_api\Settings\SettingsBase;
  * @see \Drupal\social_auth_wechat\Plugin\Network\WeChatAuth.
  *
  * This should return the values required to request the social network. In this
- * case, Google requires a Client ID and a Client Secret.
+ * case, WeChat requires a Client ID and a Client Secret.
  */
 class WeChatAuthSettings extends SettingsBase implements WeChatAuthSettingsInterface {
 
@@ -30,6 +30,13 @@ class WeChatAuthSettings extends SettingsBase implements WeChatAuthSettingsInter
    * @var string
    */
   protected $clientSecret;
+
+  /**
+   * Client scope.
+   *
+   * @var string
+   */
+  protected $clientScope;
 
   /**
    * {@inheritdoc}
@@ -49,6 +56,16 @@ class WeChatAuthSettings extends SettingsBase implements WeChatAuthSettingsInter
       $this->clientSecret = $this->config->get('client_secret');
     }
     return $this->clientSecret;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getClientScope() {
+    if (!$this->clientScope) {
+      $this->clientScope = $this->config->get('client_scope');
+    }
+    return $this->clientScope;
   }
 
 }

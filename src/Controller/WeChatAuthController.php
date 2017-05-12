@@ -39,7 +39,7 @@ class WeChatAuthController extends ControllerBase {
 	private $userManager;
 
 	/**
-	 * GoogleLoginController constructor.
+	 * WeChatLoginController constructor.
 	 *
 	 * @param \Drupal\social_api\Plugin\NetworkManager $network_manager
 	 *   Used to get an instance of social_auth_google network plugin.
@@ -66,7 +66,7 @@ class WeChatAuthController extends ControllerBase {
 	}
 
 	/**
-	 * Redirects to Google Services Authentication page.
+	 * Redirects to WeChat Services Authentication page.
 	 *
 	 * Most of the Social Networks' API require you to redirect users to a
 	 * authentication page. This method is not a mandatory one, instead you must
@@ -75,29 +75,27 @@ class WeChatAuthController extends ControllerBase {
 	 * This method is called in 'social_auth_wechat.redirect_to_wechat' route.
 	 * @see social_auth_wechat.routing.yml.
 	 *
-	 * This method is triggered when the user loads user/login/google. It creates
-	 * an instance of the Network Plugin 'social auth google' and returns an
-	 * instance of the \Google_Client object.
+	 * This method is triggered when the user loads user/login/wechat. It creates
+	 * an instance of the Network Plugin 'social auth wechat' and returns an
+	 * instance of the \Overtrue\Socialite\Providers\WeChatProvider object.
 	 *
 	 * It later sets the permissions that should be asked for, and redirects the
-	 * user to Google Accounts to allow him to grant those permissions.
+	 * user to WeChat Accounts to allow him to grant those permissions.
 	 *
-	 * After the user grants permission, Google redirects him to a url specified
-	 * in the Google project settings. In this case, it should redirects to
-	 * 'user/login/google/callback', which calls the callback method.
+	 * After the user grants permission, WeChat redirects him to a url specified
+	 * in the WeChat project settings. In this case, it should redirects to
+	 * 'user/login/wechat/callback', which calls the callback method.
 	 *
 	 * @return \Zend\Diactoros\Response\RedirectResponse
-	 *   Redirection to Google Accounts.
+	 *   Redirection to WeChat Accounts.
 	 */
 	public function redirectToWeChat() {
-		/* @var \Google_Client $client */
+		/* @var \Overtrue\Socialite\Providers\WeChatProvider $client */
 		// Creates an instance of the Network Plugin and gets the SDK.
 		$client = $this->networkManager->createInstance('social_auth_wechat')->getSdk();
-		// Sets the scopes (permissions to ask for).
-		$client->setScopes(array('email', 'profile'));
 
 		// Redirects to WeChat Accounts to allow the user grant the permissions.
-		return new RedirectResponse($client->createAuthUrl());
+		return new RedirectResponse($client->redirect()->getTargetUrl());
 	}
 
 	/**
@@ -122,14 +120,12 @@ class WeChatAuthController extends ControllerBase {
 	 * the new user.
 	 */
 	public function callback() {
-		/* @var \Google_Client $client */
+		/* @var \Overtrue\Socialite\Providers\WeChatProvider $client */
 		// Creates the Network Plugin instance and get the SDK.
 		$client = $this->networkManager->createInstance('social_auth_wechat')->getSdk();
 
 		// Authenticate the user and obtains his data.
-		$this->wechatManager->setClient($client)
-		->authenticate()
-		->createService();
+		$this->wechatManager->setClient($client);
 
 		// Gets user information.
 		$user = $this->wechatManager->getUserInfo();

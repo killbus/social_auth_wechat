@@ -23,4 +23,12 @@ interface WeChatAuthSettingsInterface {
    */
   public function getClientSecret();
 
+  /**
+   * Gets the client scope.
+   *
+   * @return string
+   *   The client scope.
+   */
+  public function getClientScope();
+
 }

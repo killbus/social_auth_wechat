@@ -8,6 +8,7 @@ use Drupal\Core\Render\MetadataBubblingUrlGenerator;
 use Drupal\social_api\SocialApiException;
 use Drupal\social_auth\Plugin\Network\SocialAuthNetwork;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use EasyWeChat\Foundation\Application;
 
 /**
  * Defines Social Auth Google Network Plugin.
@@ -99,11 +100,11 @@ class WeChatAuth extends SocialAuthNetwork {
    *
    * The returning value of this method is what is returned when an instance of
    * this Network Plugin called the getSdk method.
-   * @see Drupal\social_auth_wechat\Controller\GoogleAuthController::callback
+   * @see Drupal\social_auth_wechat\Controller\WeChatAuthController::callback
    */
   public function initSdk() {
-    // Checks if the dependency, the \Google_Client library, is available.
-    $class_name = '\Google_Client';
+    // Checks if the dependency, the \EasyWeChat\Foundation\Application library, is available.
+    $class_name = '\EasyWeChat\Foundation\Application';
     if (!class_exists($class_name)) {
       throw new SocialApiException(sprintf('The PHP SDK for WeChat Services could not be found. Class: %s.', $class_name));
     }
@@ -118,11 +119,20 @@ class WeChatAuth extends SocialAuthNetwork {
     // Gets the absolute url of the callback.
     $redirect_uri = $this->urlGenerator->generateFromRoute('social_auth_wechat.callback', array(), array('absolute' => TRUE));
 
-    // Creates a and sets data to Google_Client object.
-    $client = new \Google_Client();
-    $client->setClientId($settings->getClientId());
-    $client->setClientSecret($settings->getClientSecret());
-    $client->setRedirectUri($redirect_uri);
+    // Creates a and sets data to Application object.
+    $config = [
+      'app_id' => $settings->getClientId(),
+      'secret' => $settings->getClientSecret(),
+      'oauth' => [
+        'scopes'   => [$settings->getClientScope()],
+        'callback' => $redirect_uri,
+      ],
+    ];
+
+    $app = new Application($config);
+
+    /** @var \Overtrue\Socialite\Providers\WeChatProvider $client */
+    $client = $app->oauth;
 
     return $client;
   }
