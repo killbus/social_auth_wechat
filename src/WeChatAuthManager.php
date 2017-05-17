@@ -61,8 +61,7 @@ class WeChatAuthManager {
   /**
    * Returns the user information.
    *
-   * @return \Google_Service_Oauth2_Userinfoplus.
-   *   Google_Service_Userinfoplus object.
+   * @return \Overtrue\Socialite\User.
    */
   public function getUserInfo() {
     return $this->client->user();

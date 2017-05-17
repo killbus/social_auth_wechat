@@ -128,14 +128,17 @@ class WeChatAuthController extends ControllerBase {
 		$this->wechatManager->setClient($client);
 
 		// Gets user information.
+    /** @var \Overtrue\Socialite\User $user */
 		$user = $this->wechatManager->getUserInfo();
 
 		// If user information could be retrieved.
 		if ($user) {
+		  $email = $user->getEmail()? $user->getEmail() : $user->getId().'@notproviedbyuser.no';
       // Uses authenticateUser method to create and/or login an user.
-			$this->userManager->authenticateUser($user->getEmail(), $user->getName(), $user->getId(), $user->getPicture());
+      return $this->userManager->authenticateUser($email, $user->getNickname(), $user->getId(), $user->getAvatar());
 		}
 
+    \Drupal::logger('social_auth_wechat')->debug('We shouldnt get here');
 		drupal_set_message($this->t('You could not be authenticated, please contact the administrator'), 'error');
 		return $this->redirect('user.login');
 	}
