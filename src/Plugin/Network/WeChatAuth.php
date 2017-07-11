@@ -7,8 +7,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\MetadataBubblingUrlGenerator;
 use Drupal\social_api\SocialApiException;
 use Drupal\social_auth\Plugin\Network\SocialAuthNetwork;
+use Overtrue\Socialite\SocialiteManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use EasyWeChat\Foundation\Application;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Defines Social Auth Google Network Plugin.
@@ -57,6 +58,12 @@ class WeChatAuth extends SocialAuthNetwork {
    */
   protected $urlGenerator;
 
+  /*
+   * The request object.
+   * @var \Symfony\Component\HttpFoundation\Request
+   */
+  protected $request;
+
   /**
    * {@inheritdoc}
    */
@@ -67,12 +74,13 @@ class WeChatAuth extends SocialAuthNetwork {
       $plugin_id,
       $plugin_definition,
       $container->get('entity_type.manager'),
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('request_stack')->getCurrentRequest()
     );
   }
 
   /**
-   * GoogleLogin constructor.
+   * WeChat Login constructor.
    *
    * @param \Drupal\Core\Render\MetadataBubblingUrlGenerator $url_generator
    *   Used to generate a absolute url for authentication.
@@ -86,11 +94,13 @@ class WeChatAuth extends SocialAuthNetwork {
    *   The entity type manager.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The configuration factory.
+   * @param \Symfony\Component\HttpFoundation\Request $request
    */
-  public function __construct(MetadataBubblingUrlGenerator $url_generator, array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config_factory) {
+  public function __construct(MetadataBubblingUrlGenerator $url_generator, array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config_factory, Request $request) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager, $config_factory);
 
     $this->urlGenerator = $url_generator;
+    $this->request = $request;
   }
 
   /**
@@ -104,9 +114,9 @@ class WeChatAuth extends SocialAuthNetwork {
    */
   public function initSdk() {
     // Checks if the dependency, the \EasyWeChat\Foundation\Application library, is available.
-    $class_name = '\EasyWeChat\Foundation\Application';
+    $class_name = '\Overtrue\Socialite\SocialiteManager';
     if (!class_exists($class_name)) {
-      throw new SocialApiException(sprintf('The PHP SDK for WeChat Services could not be found. Class: %s.', $class_name));
+      throw new SocialApiException(sprintf('The PHP SDK for WeChat OAuth could not be found. Class: %s.', $class_name));
     }
 
     /* @var \Drupal\social_auth_wechat\Settings\WeChatAuthSettings $settings */
@@ -119,22 +129,18 @@ class WeChatAuth extends SocialAuthNetwork {
     // Gets the absolute url of the callback.
     $redirect_uri = $this->urlGenerator->generateFromRoute('social_auth_wechat.callback', array(), array('absolute' => TRUE));
 
-    // Creates a and sets data to Application object.
     $config = [
-      'app_id' => $settings->getClientId(),
-      'secret' => $settings->getClientSecret(),
-      'oauth' => [
-        'scopes'   => [$settings->getClientScope()],
-        'callback' => $redirect_uri,
+      'wechat' => [
+        'client_id'     => $settings->getClientId(),
+        'client_secret' => $settings->getClientSecret(),
+        'redirect'      => $redirect_uri,
       ],
     ];
 
-    $app = new Application($config);
+    /** @var \Overtrue\Socialite\SocialiteManager $client */
+    $client = new SocialiteManager($config, $this->request);
 
-    /** @var \Overtrue\Socialite\Providers\WeChatProvider $client */
-    $client = $app->oauth;
-
-    return $client;
+    return $client->driver('wechat')->scopes([$settings->getClientScope()]);
   }
 
 }
