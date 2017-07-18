@@ -36,7 +36,7 @@ use Symfony\Component\HttpFoundation\Request;
  *     field.
  *   - config_id: The configuration id. It usually is the same used by the
  *     configuration form.
- *     @see Drupal\social_auth_wechat\Form\WeChatAuthSettingsForm.
+ *     @see \Drupal\social_auth_wechat\Form\WeChatAuthSettingsForm.
  *
  * @Network(
  *   id = "social_auth_wechat",
@@ -127,7 +127,7 @@ class WeChatAuth extends SocialAuthNetwork {
     $settings = $this->settings;
 
     // Gets the absolute url of the callback.
-    $redirect_uri = $this->urlGenerator->generateFromRoute('social_auth_wechat.callback', array(), array('absolute' => TRUE));
+    $redirect_uri = $this->urlGenerator->generateFromRoute('social_auth_wechat.callback', [], ['absolute' => TRUE]);
 
     $config = [
       'wechat' => [
