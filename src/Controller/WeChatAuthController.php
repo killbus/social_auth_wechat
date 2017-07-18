@@ -30,14 +30,14 @@ class WeChatAuthController extends ControllerBase {
 	 */
 	private $userManager;
 
-	/**
-	 * WeChatLoginController constructor.
-	 *
-	 * @param \Drupal\social_api\Plugin\NetworkManager $network_manager
-	 *   Used to get an instance of social_auth_google network plugin.
-	 * @param \Drupal\social_auth\SocialAuthUserManager $user_manager
-	 *   Manages user login/registration.
-	 */
+  /**
+   * WeChatLoginController constructor.
+   *
+   * @param \Drupal\social_api\Plugin\NetworkManager $network_manager
+   *   Used to get an instance of social_auth_google network plugin.
+   * @param \Drupal\social_auth\SocialAuthUserManager $user_manager
+   *   Manages user login/registration.
+   */
 	public function __construct(NetworkManager $network_manager, SocialAuthUserManager $user_manager) {
 		$this->networkManager = $network_manager;
 		$this->userManager = $user_manager;
@@ -78,12 +78,17 @@ class WeChatAuthController extends ControllerBase {
    * Redirection to WeChat Accounts.
    */
 	public function redirectToWeChat() {
-		// Creates an instance of the Network Plugin and gets the SDK.
-    /** @var \Overtrue\Socialite\Providers\WeChatProvider $client */
-		$client = $this->networkManager->createInstance('social_auth_wechat')->getSdk();
-
-		// Redirects to WeChat Accounts to allow the user grant the permissions.
-		return new RedirectResponse($client->redirect()->getTargetUrl());
+	  /** @var \Drupal\Core\Session\AccountInterface $current_user */
+	  $current_user = $this->currentUser();
+	  if ($current_user->isAnonymous()) {
+      // Creates an instance of the Network Plugin and gets the SDK.
+      /** @var \Overtrue\Socialite\Providers\WeChatProvider $client */
+      $client = $this->networkManager->createInstance('social_auth_wechat')->getSdk();
+      // Redirects to WeChat Accounts to allow the user grant the permissions.
+      return new RedirectResponse($client->redirect()->getTargetUrl());
+    } else {
+      return new \Symfony\Component\HttpFoundation\RedirectResponse('/user');
+    }
 	}
 
   /**

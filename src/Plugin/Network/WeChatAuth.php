@@ -110,7 +110,7 @@ class WeChatAuth extends SocialAuthNetwork {
    *
    * The returning value of this method is what is returned when an instance of
    * this Network Plugin called the getSdk method.
-   * @see Drupal\social_auth_wechat\Controller\WeChatAuthController::callback
+   * @see \Drupal\social_auth_wechat\Controller\WeChatAuthController::callback
    */
   public function initSdk() {
     // Checks if the dependency, the \EasyWeChat\Foundation\Application library, is available.
