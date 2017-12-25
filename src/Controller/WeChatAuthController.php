@@ -16,19 +16,19 @@ use Zend\Diactoros\Response\RedirectResponse;
  */
 class WeChatAuthController extends ControllerBase {
 
-	/**
-	 * The network plugin manager.
-	 *
-	 * @var \Drupal\social_api\Plugin\NetworkManager
-	 */
-	private $networkManager;
+  /**
+   * The network plugin manager.
+   *
+   * @var \Drupal\social_api\Plugin\NetworkManager
+   */
+  private $networkManager;
 
-	/**
-	 * The user manager.
-	 *
-	 * @var \Drupal\social_auth\SocialAuthUserManager
-	 */
-	private $userManager;
+  /**
+   * The user manager.
+   *
+   * @var \Drupal\social_auth\SocialAuthUserManager
+   */
+  private $userManager;
 
   /**
    * WeChatLoginController constructor.
@@ -38,20 +38,20 @@ class WeChatAuthController extends ControllerBase {
    * @param \Drupal\social_auth\SocialAuthUserManager $user_manager
    *   Manages user login/registration.
    */
-	public function __construct(NetworkManager $network_manager, SocialAuthUserManager $user_manager) {
-		$this->networkManager = $network_manager;
-		$this->userManager = $user_manager;
-	}
+  public function __construct(NetworkManager $network_manager, SocialAuthUserManager $user_manager) {
+    $this->networkManager = $network_manager;
+    $this->userManager = $user_manager;
+  }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public static function create(ContainerInterface $container) {
-		return new static(
-				$container->get('plugin.network.manager'),
-				$container->get('social_auth.user_manager')
-				);
-	}
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+                $container->get('plugin.network.manager'),
+                $container->get('social_auth.user_manager')
+                );
+  }
 
   /**
    * Redirects to WeChat Services Authentication page.
@@ -61,7 +61,8 @@ class WeChatAuthController extends ControllerBase {
    * adapt to the requirements of the module you are implementing.
    *
    * This method is called in 'social_auth_wechat.redirect_to_wechat' route.
-   * @see social_auth_wechat.routing.yml.
+   *
+   * @see social_auth_wechat.routing.yml
    *
    * This method is triggered when the user loads user/login/wechat. It creates
    * an instance of the Network Plugin 'social auth wechat' and returns an
@@ -74,22 +75,23 @@ class WeChatAuthController extends ControllerBase {
    * in the WeChat project settings. In this case, it should redirects to
    * 'user/login/wechat/callback', which calls the callback method.
    *
-   * @return \Zend\Diactoros\Response\RedirectResponse Redirection to WeChat Accounts.
-   * Redirection to WeChat Accounts.
+   * @return \Zend\Diactoros\Response\RedirectResponse
+   *   Redirection to WeChat Accounts.
    */
-	public function redirectToWeChat() {
-	  /** @var \Drupal\Core\Session\AccountInterface $current_user */
-	  $current_user = $this->currentUser();
-	  if ($current_user->isAnonymous()) {
+  public function redirectToWeChat() {
+    /** @var \Drupal\Core\Session\AccountInterface $current_user */
+    $current_user = $this->currentUser();
+    if ($current_user->isAnonymous()) {
       // Creates an instance of the Network Plugin and gets the SDK.
       /** @var \Overtrue\Socialite\Providers\WeChatProvider $client */
       $client = $this->networkManager->createInstance('social_auth_wechat')->getSdk();
       // Redirects to WeChat Accounts to allow the user grant the permissions.
       return new RedirectResponse($client->redirect()->getTargetUrl());
-    } else {
+    }
+    else {
       return new \Symfony\Component\HttpFoundation\RedirectResponse('/user');
     }
-	}
+  }
 
   /**
    * Callback function to login user.
@@ -99,7 +101,8 @@ class WeChatAuthController extends ControllerBase {
    * module you are implementing.
    *
    * This method is called in 'social_auth_wechat.callback' route.
-   * @see social_auth_wechat.routing.yml.
+   *
+   * @see social_auth_wechat.routing.yml
    *
    * This method is triggered when the path user/login/wechat/callback is
    * loaded. It creates an instance of the Network Plugin 'social auth wechat'.
@@ -111,26 +114,29 @@ class WeChatAuthController extends ControllerBase {
    * has already registered. If so, it logins that user; if not, it creates
    * a new user with the information provided by the social network and logins
    * the new user.
+   *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    */
-	public function callback() {
+  public function callback() {
     // Creates the Network Plugin instance and get the SDK.
     /* @var \Overtrue\Socialite\Providers\WeChatProvider $client */
     $client = $this->networkManager->createInstance('social_auth_wechat')->getSdk();
 
-		// Gets user information.
+    // Gets user information.
     /** @var \Overtrue\Socialite\User $user */
-		$user = $client->user();
+    $user = $client->user();
 
-		// If user information could be retrieved.
-		if ($user) {
-		  $email = $user->getEmail()? $user->getEmail() : $user->getId().'@wechat';
+    // If user information could be retrieved.
+    if ($user) {
+      $email = $user->getEmail() ? $user->getEmail() : $user->getId() . '@wechat';
+      $username = $user->getNickname() ? $user->getNickname() : 'wechat' . $user->getId();
+      $token = $user->getToken();
       // Uses authenticateUser method to create and/or login an user.
-      return $this->userManager->authenticateUser($email, $user->getNickname(), $user->getId(), $user->getAvatar());
-		}
+      return $this->userManager->authenticateUser($username, $email, $user->getId(), $token, $user->getAvatar(), ' ');
+    }
 
-		drupal_set_message($this->t('You could not be authenticated, please contact the administrator'), 'error');
-		return $this->redirect('user.login');
-	}
+    drupal_set_message($this->t('You could not be authenticated, please contact the administrator'), 'error');
+    return $this->redirect('user.login');
+  }
 
 }

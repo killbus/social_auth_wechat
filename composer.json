@@ -11,6 +11,6 @@
         "source": "http://cgit.drupalcode.org/social_auth_wechat"
     },
     "require": {
-        "overtrue/socialite": "^1.1.1"
+        "overtrue/socialite": "^2.0"
     }
 }
