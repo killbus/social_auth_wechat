@@ -1,14 +1,12 @@
-SOCIAL AUTH WECHAT MODULE
-
 CONTENTS OF THIS FILE
 ---------------------
 
  * Introduction
  * Requirements
- * Recommended modules
  * Installation
  * Configuration
  * How it works
+ * Maintainers
  * Support requests
 
 INTRODUCTION
@@ -23,6 +21,7 @@ It adds to the site:
 * A settings form on /admin/config/social-api/social-auth/wechat page.
 * A WeChat Logo in the Social Auth Login block.
 
+
 REQUIREMENTS
 ------------
 
@@ -34,13 +33,14 @@ This module requires the following modules:
 INSTALLATION
 ------------
 
- * Download overtrue/wechat SDK
-   (https://github.com/overtrue/wechat). We recommend to use
-   Composer module to install the library.
-    ````
-    composer require "drupal/social_auth_wechat:1.x-dev"
+ * Add the drupal.org repository:
+   composer config repositories.drupal composer https://packages.drupal.org/8
 
-    ````
+ * Download overtrue/wechat SDK
+   (https://github.com/overtrue/wechat).
+
+ * Use composer module to install the library:
+   composer require "drupal/social_auth_wechat:2.x-dev"
 
  * Install the dependencies: Social API and Social Auth.
 
@@ -63,7 +63,7 @@ HOW IT WORKS
 ------------
 
 Users can click on the WeChat logo on the Social Auth Login block
-You can also add a button or link anywhere on the site that points 
+You can also add a button or link anywhere on the site that points
 to /user/login/wechat, so theming and customizing the button or link
 is very flexible.
 
@@ -72,6 +72,13 @@ the user to WeChat Accounts for authentication. WeChat then returns the user to
 Drupal site. If we have an existing Drupal user with the same email address
 provided by WeChat, that user is logged in. Otherwise a new Drupal user is
 created.
+
+MAINTAINERS
+-----------
+
+Current Maintainers:
+ * Jingsheng Wang (skyredwang) - https://www.drupal.org/u/skyredwang
+ * Getulio Valentin Sánchez (gvso) - https://www.drupal.org/u/gvso
 
 SUPPORT REQUESTS
 ----------------
@@ -83,7 +90,7 @@ Before posting a support request, check Recent log entries at
 admin/reports/dblog
 
 Once you have done this, you can post a support request on github:
-https://www.drupal.org/project/issues/social_auth_wechat.
+https://www.drupal.org/project/issues/social_auth_wechat
 
 When posting a support request, please inform if you were able to see any errors
 in Recent log entries.
