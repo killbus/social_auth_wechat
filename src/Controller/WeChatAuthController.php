@@ -3,6 +3,7 @@
 namespace Drupal\social_auth_wechat\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Url;
 use Drupal\social_api\Plugin\NetworkManager;
 use Drupal\social_auth\SocialAuthUserManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -89,7 +90,9 @@ class WeChatAuthController extends ControllerBase {
       return new RedirectResponse($client->redirect()->getTargetUrl());
     }
     else {
-      return new \Symfony\Component\HttpFoundation\RedirectResponse('/user');
+      $post_login = \Drupal::configFactory()->get('social_auth.settings')->get('post_login');
+
+      return new \Symfony\Component\HttpFoundation\RedirectResponse(Url::fromUserInput($post_login)->toString());
     }
   }
 
