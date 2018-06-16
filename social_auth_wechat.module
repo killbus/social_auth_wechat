@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 use \Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -15,5 +17,16 @@ function social_auth_wechat_form_user_form_alter(&$form, FormStateInterface $for
     $form['account']['mail']['#type'] = 'hidden';
     $form['account']['pass']['#type'] = 'hidden';
     $form['account']['current_pass']['#type'] = 'hidden';
+  }
+}
+
+function social_auth_wechat_entity_base_field_info(EntityTypeInterface $entity_type) {
+  if ($entity_type->id() == 'social_auth') {
+    $fields = [];
+    $fields['provider_union_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Provider union user ID'))
+      ->setDescription(t('Some providers can create multi applications, and all the applications shared one user ID.'));
+
+    return $fields;
   }
 }
